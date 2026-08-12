@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiDocEscolar - Optimiza tus PDF para Trámites</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Librería para manipular y crear PDFs -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-zinc-900 border-b border-zinc-800 text-white p-4 shadow-lg">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+        <h1 class="text-xl font-bold tracking-tight text-emerald-400">📄 MiDocEscolar</h1>
+        <span class="text-xs text-zinc-400 font-normal">Optimiza tus PDF para Trámites</span>
+      </div>
+      <span class="text-xs bg-emerald-950 border border-emerald-800 px-3 py-1 rounded-full text-emerald-300 hidden sm:inline-block">100% Gratuito y Seguro</span>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-3xl mx-auto w-full px-4 py-8">
+    
+    <!-- Bloque de Anuncio AdSense Superior -->
+    <div class="bg-zinc-900 h-20 rounded-lg flex items-center justify-center text-zinc-500 text-sm mb-6 border border-dashed border-zinc-800">
+       Espacio Reservado para AdSense (Banner 728x90)
+    </div>
+
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-extrabold text-white mb-2">Prepara tus documentos escolares</h2>
+      <p class="text-zinc-400">Ajusta el peso de tus archivos, convierte tus fotos o únelos en un solo PDF listo para subir.</p>
+    </div>
+
+    <!-- Tarjeta de Procesamiento -->
+    <div class="bg-zinc-900 p-6 rounded-2xl shadow-xl border border-zinc-800">
+      
+      <!-- Zona Dropzone -->
+      <div class="border-2 border-dashed border-emerald-500/50 bg-emerald-950/20 hover:bg-emerald-950/40 rounded-xl p-8 text-center cursor-pointer transition" id="dropzone">
+        <svg class="w-12 h-12 text-emerald-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        <p class="font-semibold text-zinc-200">Arrastra tus archivos aquí o <span class="text-emerald-400 underline">haz clic para examinar</span></p>
+        <p class="text-xs text-zinc-500 mt-1">Soporta PDF, JPG, PNG</p>
+        <input type="file" id="fileInput" class="hidden" multiple accept="application/pdf,image/png,image/jpeg">
+      </div>
+
+      <!-- Lista de archivos seleccionados -->
+      <div id="fileListContainer" class="mt-4 hidden">
+        <div class="flex justify-between items-center mb-2">
+          <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Archivos seleccionados:</p>
+          <button id="clearAllBtn" class="text-xs text-red-400 hover:text-red-300 font-semibold underline">Limpiar selección</button>
+        </div>
+        <ul id="fileList" class="space-y-2 max-h-40 overflow-y-auto pr-1"></ul>
+      </div>
+
+      <!-- Opciones -->
+      <div class="mt-6 space-y-4">
+        <label class="block text-sm font-medium text-zinc-300">¿Qué deseas hacer?</label>
+        <select id="actionSelect" class="w-full p-3 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-zinc-800 text-zinc-100 font-medium">
+          <option value="photoToPdf">📷 Convertir Fotos de celular a PDF (Formato Carta)</option>
+          <option value="merge">📄 Unir varios archivos/fotos en 1 solo PDF</option>
+          <option value="compress">📉 Comprimir / Optimizar peso (< 1 MB)</option>
+        </select>
+
+        <button id="processBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2">
+          <span>Procesar y Descargar Documento</span>
+        </button>
+      </div>
+
+      <!-- Estado / Progreso -->
+      <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+
+    </div>
+
+    <!-- Garantía de Seguridad -->
+    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-zinc-400">
+      <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+      </svg>
+      <span>Tus documentos nunca salen de tu dispositivo. Procesamiento local 100% privado.</span>
+    </div>
+
+    <!-- Sección FAQ de Alto Valor para Usuarios y AdSense -->
+    <section class="mt-12 bg-zinc-900 p-6 md:p-8 rounded-2xl shadow-xl border border-zinc-800">
+      <div class="text-center mb-8">
+        <h3 class="text-2xl font-extrabold text-white">Preguntas Frecuentes y Guía de Trámites</h3>
+        <p class="text-sm text-zinc-400 mt-1">Resuelve tus dudas sobre la preparación de tus documentos para convocatorias oficiales.</p>
+      </div>
+
+      <div class="space-y-6 text-sm text-zinc-300">
+        <div class="border-b border-zinc-800 pb-4">
+          <h4 class="font-bold text-emerald-400 text-base mb-1">¿Mis documentos o datos personales se guardan en algún servidor?</h4>
+          <p class="leading-relaxed">
+            <strong>No, en absoluto.</strong> MiDocEscolar funciona bajo tecnología <em>Client-Side</em> (procesamiento local en el navegador). Todos los procesos de unión, conversión de foto a PDF y compresión ocurren de forma aislada dentro de la memoria RAM de tu celular o computadora. Ningún archivo o dato personal es transmitido, subido o guardado en servidores externos.
+          </p>
+        </div>
+
+        <div class="border-b border-zinc-800 pb-4">
+          <h4 class="font-bold text-emerald-400 text-base mb-1">¿Por qué las plataformas como USICAMM, SEP o universidades rechazan mis archivos?</h4>
+          <p class="leading-relaxed">
+            Las plataformas oficiales de registro e inscripción escolar en México suelen establecer límites estrictos de almacenamiento por aspirante (por lo general de <strong>1 MB a 2 MB por archivo</strong>). Si tomas una foto con un smartphone moderno, la imagen puede pesar más de 4 MB. Al intentar subirla, el sistema la rechaza automáticamente por exceso de tamaño o por no encontrarse en formato PDF.
+          </p>
+        </div>
+
+        <div class="border-b border-zinc-800 pb-4">
+          <h4 class="font-bold text-emerald-400 text-base mb-1">¿Cómo convierto fotos de mi INE, CURP o Título tomadas con celular a formato PDF?</h4>
+          <p class="leading-relaxed">
+            Simplemente selecciona la opción <strong>"📷 Convertir Fotos de celular a PDF"</strong> en el menú desplegable, arrastra o selecciona las fotos que tomaste y presiona el botón de procesar. La herramienta ajustará automáticamente la orientación y escala de la imagen para centrarla en hojas tamaño carta estándar.
+          </p>
+        </div>
+
+        <div class="border-b border-zinc-800 pb-4">
+          <h4 class="font-bold text-emerald-400 text-base mb-1">¿Qué requisitos de formato piden los principales trámites educativos en México?</h4>
+          <ul class="list-disc list-inside mt-2 space-y-1 text-zinc-400">
+            <li><strong>USICAMM (Plazas Docentes):</strong> Archivos individuales en PDF con peso menor a 1 MB o 2 MB según el tipo de documento.</li>
+            <li><strong>Inscripciones de Nivel Medio Superior y Superior (CBTis, UNAM, IPN, UAM):</strong> Legibilidad clara, archivos PDF de un solo cuerpo para expedientes completos.</li>
+            <li><strong>Trámites de Becas y Cédula Profesional:</strong> Identificaciones oficiales (INE) y comprobantes unidos en un solo archivo PDF.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-emerald-400 text-base mb-1">¿El uso de esta herramienta tiene algún costo o límite de descargas?</h4>
+          <p class="leading-relaxed">
+            No. MiDocEscolar es una herramienta <strong>100% gratuita y sin límite de uso</strong>. Puedes procesar, convertir y optimizar los documentos que necesites sin necesidad de crear una cuenta o instalar aplicaciones adicionales.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bloque de Anuncio AdSense Inferior -->
+    <div class="bg-zinc-900 h-32 rounded-lg flex items-center justify-center text-zinc-500 text-sm mt-8 border border-dashed border-zinc-800">
+      Espacio Reservado para AdSense (Banner de Alta Conversión)
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-zinc-900 text-zinc-400 py-8 text-center text-sm border-t border-zinc-800 mt-12">
+    <div class="max-w-4xl mx-auto px-4 space-y-4">
+      <div class="flex flex-wrap justify-center gap-6 text-xs font-medium text-zinc-300">
+        <a href="/privacidad.html" class="hover:text-emerald-400 hover:underline">Política de Privacidad</a>
+        <a href="#" class="hover:text-emerald-400 hover:underline">Términos de Servicio</a>
+        <a href="#" class="hover:text-emerald-400 hover:underline">Contacto</a>
+      </div>
+      <p class="text-xs text-zinc-500">
+        MiDocEscolar no está afiliado, asociado ni respaldado por la SEP, USICAMM u otro organismo gubernamental. Es una herramienta independiente de procesamiento documental local.
+      </p>
+      <p class="text-xs text-zinc-600">© 2026 MiDocEscolar — Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Lógica JavaScript Client-Side -->
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const fileListContainer = document.getElementById('fileListContainer');
+    const processBtn = document.getElementById('processBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const actionSelect = document.getElementById('actionSelect');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+
+    let loadedFiles = [];
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('bg-emerald-950/60');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('bg-emerald-950/60');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('bg-emerald-950/60');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+      resetApp();
+      showStatus("Selección limpiada.", "text-zinc-400");
+    });
+
+    function handleFiles(files) {
+      for (let file of files) {
+        loadedFiles.push(file);
+      }
+      renderFileList();
+    }
+
+    function renderFileList() {
+      fileList.innerHTML = '';
+      if (loadedFiles.length > 0) {
+        fileListContainer.classList.remove('hidden');
+      } else {
+        fileListContainer.classList.add('hidden');
+        return;
+      }
+
+      loadedFiles.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center bg-zinc-800 p-2 rounded text-xs text-zinc-200 border border-zinc-700";
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = "truncate max-w-[200px] font-medium";
+        nameSpan.textContent = file.name;
+
+        const sizeSpan = document.createElement('span');
+        sizeSpan.className = "text-zinc-400 text-[10px]";
+        sizeSpan.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = "text-red-400 hover:text-red-300 font-bold ml-2";
+        removeBtn.textContent = "✕";
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          loadedFiles.splice(index, 1);
+          renderFileList();
+        };
+
+        const rightDiv = document.createElement('div');
+        rightDiv.className = "flex items-center gap-2";
+        rightDiv.appendChild(sizeSpan);
+        rightDiv.appendChild(removeBtn);
+
+        li.appendChild(nameSpan);
+        li.appendChild(rightDiv);
+        fileList.appendChild(li);
+      });
+    }
+
+    function resetApp() {
+      loadedFiles = [];
+      fileInput.value = '';
+      renderFileList();
+    }
+
+    processBtn.addEventListener('click', async () => {
+      if (loadedFiles.length === 0) {
+        alert("Por favor selecciona al menos un archivo o foto.");
+        return;
+      }
+
+      setLoading(true, "Procesando tus archivos en el navegador...");
+
+      try {
+        const action = actionSelect.value;
+        const mergedPdf = await PDFLib.PDFDocument.create();
+
+        let filesToProcess = loadedFiles;
+        if (action === 'photoToPdf') {
+          filesToProcess = loadedFiles.filter(f => f.type.startsWith('image/'));
+          if (filesToProcess.length === 0) {
+            alert("Para esta opción debes seleccionar fotos/imágenes (JPG o PNG).");
+            setLoading(false);
+            return;
+          }
+        }
+
+        for (let file of filesToProcess) {
+          if (file.type === 'application/pdf' && action !== 'photoToPdf') {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            copiedPages.forEach(page => mergedPdf.addPage(page));
+          } 
+          else if (file.type.startsWith('image/')) {
+            const quality = (action === 'compress') ? 0.5 : 0.8;
+            const compressedImageDataUrl = await compressImage(file, quality);
+            
+            let embeddedImage;
+            if (compressedImageDataUrl.startsWith('data:image/jpeg')) {
+              embeddedImage = await mergedPdf.embedJpg(compressedImageDataUrl);
+            } else {
+              embeddedImage = await mergedPdf.embedPng(compressedImageDataUrl);
+            }
+
+            if (action === 'photoToPdf') {
+              const pageWidth = 612;
+              const pageHeight = 792;
+              const margin = 36;
+
+              const page = mergedPdf.addPage([pageWidth, pageHeight]);
+              
+              const maxWidth = pageWidth - (margin * 2);
+              const maxHeight = pageHeight - (margin * 2);
+
+              const imgWidth = embeddedImage.width;
+              const imgHeight = embeddedImage.height;
+              
+              const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+              const finalWidth = imgWidth * scale;
+              const finalHeight = imgHeight * scale;
+
+              const x = (pageWidth - finalWidth) / 2;
+              const y = (pageHeight - finalHeight) / 2;
+
+              page.drawImage(embeddedImage, {
+                x: x,
+                y: y,
+                width: finalWidth,
+                height: finalHeight,
+              });
+
+            } else {
+              const page = mergedPdf.addPage([embeddedImage.width, embeddedImage.height]);
+              page.drawImage(embeddedImage, {
+                x: 0,
+                y: 0,
+                width: embeddedImage.width,
+                height: embeddedImage.height,
+              });
+            }
+          }
+        }
+
+        const pdfBytes = await mergedPdf.save();
+        downloadBlob(pdfBytes, 'Documento_Escolar_MiDoc.pdf', 'application/pdf');
+
+        setLoading(false);
+        showStatus("¡Listo! Tu PDF ha sido generado y descargado. La selección se ha limpiado.", "text-emerald-400");
+        
+        resetApp();
+
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+        showStatus("Error al procesar. Revisa que tus archivos sean imágenes o PDFs válidos.", "text-red-400");
+      }
+    });
+
+    function compressImage(file, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            const MAX_WIDTH = 1600;
+            const MAX_HEIGHT = 1600;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = (err) => reject(err);
+        };
+      });
+    }
+
+    function downloadBlob(bytes, filename, contentType) {
+      const blob = new Blob([bytes], { type: contentType });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function setLoading(isLoading, text = "") {
+      if (isLoading) {
+        processBtn.disabled = true;
+        processBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        statusMessage.classList.remove('hidden');
+        statusMessage.className = "mt-4 text-center text-sm font-medium text-emerald-400 animate-pulse";
+        statusMessage.textContent = text;
+      } else {
+        processBtn.disabled = false;
+        processBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function showStatus(text, colorClass) {
+      statusMessage.classList.remove('hidden');
+      statusMessage.className = `mt-4 text-center text-sm font-medium ${colorClass}`;
+      statusMessage.textContent = text;
+    }
+  </script>
+</body>
+</html>
